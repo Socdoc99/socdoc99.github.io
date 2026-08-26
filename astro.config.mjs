@@ -354,7 +354,7 @@ const astroI18nOptions = i18nEnabled
 export default defineConfig({
   output: 'static',
   adapter: resolveAdapter(),
-  site: process.env.SITE_URL || SITE_URL_FALLBACK,
+  site: site: 'https://socdoc99.github.io',
   ...(astroI18nOptions ? { i18n: astroI18nOptions } : {}),
 
   // Astro 7 changed the default to 'jsx', which strips whitespace between
