@@ -1,6 +1,6 @@
 ---
 title: 'LOVE — Colombian Sign Language learning platform'
-summary: 'A Duolingo-style web platform for learning Colombian Sign Language, linked to a physical-product brand through a redeem code.'
+summary: 'A web application was developed to learn Colombian Sign Language (LSC) in an interactive and engaging way. The platform teaches each sign along with its meaning through a video dictionary, topic-based lessons, and game-like features such as a daily streak. In addition, every product from the LOVE brand (t-shirts, mugs, caps, and keychains) includes a code that links the item to its lesson, bridging the physical and digital worlds. The content is designed to be validated by Deaf people, interpreters, and professionals in the field.'
 stack: ['Django', 'Django REST Framework', 'PostgreSQL', 'Firebase Admin SDK', 'Ionic', 'React', 'TypeScript', 'Vite', 'Capacitor']
 status: 'Three-person thesis project, currently in MVP phase'
 repoUrl: 'https://github.com/Socdoc99/01-LSC-APP-0.1'

@@ -1,6 +1,6 @@
 ---
 title: 'LOVE — Plataforma de aprendizaje de LSC'
-summary: 'Plataforma web estilo Duolingo para aprender Lengua de Señas Colombiana, vinculada a una marca de productos físicos mediante un código de canje.'
+summary: 'Se desarrolló una aplicación web para aprender Lengua de Señas Colombiana (LSC) de forma interactiva y entretenida. La plataforma enseña cada seña junto con su significado, a través de un diccionario en video, lecciones por temas y dinámicas de juego como la racha diaria. Además, cada producto de la marca LOVE (camisetas, mugs, gorras y llaveros) incluye un código que conecta la prenda con su lección, uniendo el mundo físico y el digital. El contenido está diseñado para ser validado por personas sordas, intérpretes y profesionales del área.'
 stack: ['Django', 'Django REST Framework', 'PostgreSQL', 'Firebase Admin SDK', 'Ionic', 'React', 'TypeScript', 'Vite', 'Capacitor']
 status: 'Proyecto de grado en equipo de tres personas, en fase de MVP'
 repoUrl: 'https://github.com/Socdoc99/01-LSC-APP-0.1'
