@@ -1,5 +1,5 @@
 ---
-title: 'Multi-agent Tech Roadmap Curator'
+title: 'Tech Roadmap Curator with RAG'
 summary: 'A system that generates personalized learning roadmaps (Frontend, Backend, DevOps or Mobile) by combining semantic retrieval (RAG) over a custom vector store with a Streamlit interface.'
 stack: ['Python', 'Streamlit', 'LangChain', 'Sentence-Transformers', 'FAISS']
 status: 'Three-person academic team project, finished and submitted'

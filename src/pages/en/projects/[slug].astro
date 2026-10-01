@@ -22,6 +22,7 @@ const locale = 'en' as const;
   description={project.data.summary}
   pathEs={`proyectos/${project.id}`}
   pathEn={`projects/${project.id}`}
+  image={`og/project/en/${project.id}.png`}
 >
   <article class="mx-auto max-w-3xl px-6 py-16">
     <a href={sectionPath(locale, 'projects')} class="font-mono text-sm text-[var(--fg-muted)] hover:text-[var(--fg)]">
