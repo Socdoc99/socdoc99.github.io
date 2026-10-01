@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import ThemeToggle from '../components/ThemeToggle.tsx';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
 import Nav from '../components/Nav.astro';
 import CursorField from '../components/CursorField.astro';
@@ -56,27 +55,6 @@ const enUrl = new URL(localePath('en', pathEn), Astro.site);
     <meta property="og:locale" content={locale === 'es' ? 'es_CO' : 'en_US'} />
     <meta property="og:locale:alternate" content={locale === 'es' ? 'en_US' : 'es_CO'} />
     <meta name="twitter:card" content="summary" />
-
-    <!--
-      Reads the stored/preferred theme before paint so the page never flashes
-      the wrong theme. Kept inline (not an external script) on purpose.
-    -->
-    <script is:inline>
-      (function () {
-        try {
-          var stored = localStorage.getItem('theme');
-          var theme =
-            stored === 'light' || stored === 'dark'
-              ? stored
-              : window.matchMedia('(prefers-color-scheme: light)').matches
-                ? 'light'
-                : 'dark';
-          document.documentElement.dataset.theme = theme;
-        } catch (e) {
-          /* localStorage unavailable; default dark styles still apply */
-        }
-      })();
-    </script>
   </head>
   <body class="text-[var(--fg)] antialiased">
     <CursorField />
@@ -93,19 +71,11 @@ const enUrl = new URL(localePath('en', pathEn), Astro.site);
           {strings.hero.name}
         </a>
         <Nav locale={locale} />
-        <div class="flex items-center gap-3">
-          <LanguageSwitcher
-            locale={locale}
-            targetPath={locale === 'es' ? pathEn : pathEs}
-            label={strings.language.switchTo}
-          />
-          <ThemeToggle
-            labelToggle={strings.theme.toggle}
-            labelLight={strings.theme.light}
-            labelDark={strings.theme.dark}
-            client:load
-          />
-        </div>
+        <LanguageSwitcher
+          locale={locale}
+          targetPath={locale === 'es' ? pathEn : pathEs}
+          label={strings.language.switchTo}
+        />
       </div>
     </header>
 
