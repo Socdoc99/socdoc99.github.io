@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://socdoc.tech/sitemap-index.xml
