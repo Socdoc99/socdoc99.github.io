@@ -1,198 +1,53 @@
-name: Build
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  quality:
-    name: Lint, type check and tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      # No version here on purpose: pnpm/action-setup reads `packageManager`
-      # from package.json, so CI, Docker and a developer's machine cannot
-      # drift onto three different pnpm versions.
-      - uses: pnpm/action-setup@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint
-      - run: pnpm run check
-      - run: pnpm run test:run
-
-  # Every deploy target gets built and inspected.
-  #
-  # Both Cloudflare failures in #600 shipped because nothing here ever built
-  # anything but the default adapter. One of them died loudly; the other
-  # reported a completely successful build and wrote 89 pages containing the
-  # string "[object Object]". So a green exit code is not the test — the
-  # verify step reads the output back and is what actually catches that.
   build:
-    name: Build (${{ matrix.target }})
-    needs: quality
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [vercel, netlify, cloudflare]
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      # No version here on purpose: pnpm/action-setup reads `packageManager`
-      # from package.json, so CI, Docker and a developer's machine cannot
-      # drift onto three different pnpm versions.
-      - uses: pnpm/action-setup@v3
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build
-        run: pnpm run build
-        env:
-          # `vercel` is the default and takes no DEPLOY_TARGET.
-          DEPLOY_TARGET: ${{ matrix.target != 'vercel' && matrix.target || '' }}
-          SITE_URL: ${{ secrets.SITE_URL || 'https://example.com' }}
+        run: npm run build
 
-      - name: Verify the output is a usable site
-        run: pnpm run verify
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-  # The container is documented in the README, so it has to keep working.
-  # Nothing else here would notice it breaking: it is not part of `validate`,
-  # and a developer who never runs Docker would not see it fail.
-  docker:
-    name: Local preview container
-    runs-on: ubuntu-latest
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-
-      # Through compose rather than `docker build`, because compose is what the
-      # README tells people to run and what carries the configuration into the
-      # build. Compose resolves these from the environment exactly as it
-      # resolves them from a developer's `.env`.
-      - name: Serve it
-        env:
-          SITE_URL: https://ci.example
-          PUBLIC_GA_MEASUREMENT_ID: G-CITEST123
-          PUBLIC_GTM_ID: GTM-CITEST
-          PUBLIC_UMAMI_WEBSITE_ID: ci-umami-website-id
-          PUBLIC_UMAMI_SRC: https://umami.ci.example/script.js
-          PUBLIC_GOOGLE_MAPS_API_KEY: ci-maps-key
-          PUBLIC_CONSENT_ENABLED: 'true'
-          PUBLIC_PRIVACY_POLICY_URL: /ci-privacy-check
-          GOOGLE_SITE_VERIFICATION: ci-google-token
-          BING_SITE_VERIFICATION: ci-bing-token
-        run: |
-          docker compose up --build -d
-          for i in $(seq 1 30); do
-            curl -fsS http://localhost:4321/ > /dev/null && ready=1 && break
-            sleep 1
-          done
-          # Without this the loop simply ends and the step passes: its last
-          # command is `sleep`, which succeeds. A readiness check that cannot
-          # report a dead container is not a check.
-          if [ -z "$ready" ]; then
-            echo "::error::the container did not answer on :4321 within 30s"
-            docker compose logs --no-color
-            exit 1
-          fi
-
-      - name: The home page is served
-        run: curl -fsS http://localhost:4321/ | grep -q '<title>'
-
-      - name: A nested page is served
-        run: curl -fsS http://localhost:4321/blog/ | grep -q '<title>'
-
-      # SITE_URL reaches the build through compose, so a preview built with an
-      # address writes that address and not the localhost default.
-      - name: The preview writes the address it was given
-        run: |
-          curl -fsS http://localhost:4321/ -o home.html
-          grep -q 'rel="canonical" href="https://ci.example/"' home.html
-
-      # Astro inlines these at build time and all of them are optional, so a
-      # build that never received them still succeeds. Reading them back out
-      # of the served page is what catches a missing one.
-      #
-      # PUBLIC_GOOGLE_MAPS_API_KEY is passed to the build but not asserted:
-      # GoogleMap is rendered on no page of the demo, so the key has nothing
-      # to appear in.
-      - name: The preview carries the configuration it was given
-        run: |
-          curl -fsS http://localhost:4321/ -o config.html
-          for value in \
-            G-CITEST123 \
-            GTM-CITEST \
-            ci-umami-website-id \
-            umami.ci.example/script.js \
-            /ci-privacy-check \
-            ci-google-token \
-            ci-bing-token \
-            'id="consent-banner"'
-          do
-            grep -qF "$value" config.html || {
-              echo "::error::$value never reached the built site"
-              exit 1
-            }
-          done
-
-      # The static build has no API routes. nginx has to say so in the shape
-      # the contact form parses, or the form shows "Failed to send message"
-      # and the reason is lost.
-      - name: The API routes answer honestly
-        run: |
-          code=$(curl -s -o body.json -w '%{http_code}' -X POST http://localhost:4321/api/contact)
-          test "$code" = "501"
-          node -e "const b=require('./body.json'); if(b.success!==false||!b.errors?.form?.[0]) process.exit(1)"
-
-      - name: A missing page is a 404
-        run: test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/no-such-page/)" = "404"
-
-      # The export service builds the files that go on a host, so the address
-      # in them matters. The build-time guards cannot catch a wrong one — they
-      # compare the canonical against the JSON-LD, which agree either way — so
-      # this reads it out of the output.
-      - name: The export writes what it was given
-        env:
-          SITE_URL: https://ci.example
-          PUBLIC_GA_MEASUREMENT_ID: G-CITEST123
-          PUBLIC_GTM_ID: GTM-CITEST
-          PUBLIC_UMAMI_WEBSITE_ID: ci-umami-website-id
-          PUBLIC_UMAMI_SRC: https://umami.ci.example/script.js
-          PUBLIC_GOOGLE_MAPS_API_KEY: ci-maps-key
-          PUBLIC_CONSENT_ENABLED: 'true'
-          PUBLIC_PRIVACY_POLICY_URL: /ci-privacy-check
-          GOOGLE_SITE_VERIFICATION: ci-google-token
-          BING_SITE_VERIFICATION: ci-bing-token
-        run: |
-          docker compose --profile export run --rm export
-          grep -q 'rel="canonical" href="https://ci.example/"' dist/index.html
-          grep -q '<loc>https://ci.example/</loc>' dist/sitemap-0.xml
-          # These files are the ones that go on a host, so what is missing from
-          # them is missing from a live site.
-          for value in G-CITEST123 ci-google-token 'id="consent-banner"'; do
-            grep -qF "$value" dist/index.html || {
-              echo "::error::$value never reached the exported files"
-              exit 1
-            }
-          done
-
-      - name: Stop
-        if: always()
-        run: docker compose --profile export down -v --remove-orphans || true
-
-# Deployment is left to the platform's own Git integration by default.
-# To deploy from here instead, add one of these to a job that runs after
-# `build`, guarded by `if: github.ref == 'refs/heads/main'`:
-#
-#   Vercel      amondnet/vercel-action@v25
-#               vercel-token / vercel-org-id / vercel-project-id, args '--prod'
-#   Netlify     nwtgck/actions-netlify@v2
-#               publish-dir './dist', NETLIFY_AUTH_TOKEN, NETLIFY_SITE_ID
-#   Cloudflare  cloudflare/wrangler-action@v3
-#               apiToken, accountId, command 'deploy'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

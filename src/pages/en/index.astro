@@ -1,20 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import { t } from '../i18n/strings';
-import { projectPath, sectionPath } from '../i18n/config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { t } from '../../i18n/strings';
+import { projectPath, sectionPath } from '../../i18n/config';
 
-const locale = 'es' as const;
+const locale = 'en' as const;
 const strings = t(locale);
-const featured = (await getCollection('projects-es'))
+const featured = (await getCollection('projects-en'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 4);
 ---
 
 <BaseLayout
   locale={locale}
-  title={`${strings.hero.name} — Portafolio`}
+  title={`${strings.hero.name} — Portfolio`}
   description={strings.hero.tagline}
   pathEs=""
   pathEn=""

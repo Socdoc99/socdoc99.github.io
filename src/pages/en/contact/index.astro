@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { t } from '../../../i18n/strings';
+import { CONTACT } from '../../../config/site';
+
+const locale = 'en' as const;
+const strings = t(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${strings.contact.title} — Santiago Ospina Calle`}
+  description={strings.contact.intro}
+  pathEs="contacto"
+  pathEn="contact"
+>
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <h1 class="text-2xl font-semibold">{strings.contact.title}</h1>
+    <p class="mt-2 text-[var(--fg-muted)]">{strings.contact.intro}</p>
+
+    <dl class="mt-8 space-y-4 font-mono text-sm">
+      <div class="flex items-baseline gap-3">
+        <dt class="w-20 text-[var(--fg-muted)]">{strings.contact.emailLabel}</dt>
+        <dd>
+          <a href={`mailto:${CONTACT.email}`} class="text-[var(--accent)] hover:underline">
+            {CONTACT.email}
+          </a>
+        </dd>
+      </div>
+      <div class="flex items-baseline gap-3">
+        <dt class="w-20 text-[var(--fg-muted)]">{strings.contact.linkedinLabel}</dt>
+        <dd>
+          <a
+            href={CONTACT.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--accent)] hover:underline"
+          >
+            {CONTACT.linkedin.replace('https://', '')}
+          </a>
+        </dd>
+      </div>
+      <div class="flex items-baseline gap-3">
+        <dt class="w-20 text-[var(--fg-muted)]">{strings.contact.githubLabel}</dt>
+        <dd>
+          <a
+            href={CONTACT.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--accent)] hover:underline"
+          >
+            {CONTACT.github.replace('https://', '')}
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </section>
+</BaseLayout>

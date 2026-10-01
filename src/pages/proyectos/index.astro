@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { projectPath } from '../../i18n/config';
+
+const locale = 'es' as const;
+const projects = (await getCollection('projects-es')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  locale={locale}
+  title="Proyectos — Santiago Ospina Calle"
+  description="Proyectos personales y académicos de Santiago Ospina Calle: bases de datos, automatización y arquitectura en la nube."
+  pathEs="proyectos"
+  pathEn="projects"
+>
+  <section class="mx-auto max-w-5xl px-6 py-16">
+    <h1 class="text-2xl font-semibold">Proyectos</h1>
+    <p class="mt-2 max-w-2xl text-[var(--fg-muted)]">
+      Proyectos propios y de equipo, en distintos estados: desde un MVP de grado hasta prototipos
+      académicos sin terminar. Cada uno indica honestamente en qué estado está.
+    </p>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      {
+        projects.map((project) => (
+          <ProjectCard
+            href={projectPath(locale, project.id)}
+            title={project.data.title}
+            summary={project.data.summary}
+            stack={project.data.stack}
+            status={project.data.status}
+          />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
