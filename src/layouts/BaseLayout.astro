@@ -1,0 +1,120 @@
+---
+import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.tsx';
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
+import Nav from '../components/Nav.astro';
+import { localePath, type Locale } from '../i18n/config';
+import { t } from '../i18n/strings';
+import manropeWoff2 from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import jetbrainsMonoWoff2 from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** This page's path in Spanish (no leading/trailing slash, no locale segment; '' for home). */
+  pathEs: string;
+  /** This page's path in English (no leading/trailing slash, no locale segment; '' for home). */
+  pathEn: string;
+}
+
+const { locale, title, description, pathEs, pathEn } = Astro.props;
+const strings = t(locale);
+const ownPath = locale === 'es' ? pathEs : pathEn;
+const canonicalUrl = new URL(localePath(locale, ownPath), Astro.site);
+const esUrl = new URL(localePath('es', pathEs), Astro.site);
+const enUrl = new URL(localePath('en', pathEn), Astro.site);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!--
+      Preloaded so the variable fonts are available before first paint —
+      otherwise the fallback-to-webfont swap reflows the page (observed as a
+      0.3 CLS in Lighthouse on first load).
+    -->
+    <link rel="preload" as="font" type="font/woff2" href={manropeWoff2} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={jetbrainsMonoWoff2} crossorigin />
+
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="es" href={esUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={esUrl} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={locale === 'es' ? 'es_CO' : 'en_US'} />
+    <meta property="og:locale:alternate" content={locale === 'es' ? 'en_US' : 'es_CO'} />
+    <meta name="twitter:card" content="summary" />
+
+    <!--
+      Reads the stored/preferred theme before paint so the page never flashes
+      the wrong theme. Kept inline (not an external script) on purpose.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark';
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          /* localStorage unavailable; default dark styles still apply */
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-[var(--bg)] text-[var(--fg)] antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-[var(--accent-fg)]"
+    >
+      {locale === 'es' ? 'Saltar al contenido' : 'Skip to content'}
+    </a>
+
+    <header class="border-b border-[var(--border)]">
+      <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+        <a href={localePath(locale)} class="font-mono text-sm text-[var(--fg)]">
+          {strings.hero.name}
+        </a>
+        <Nav locale={locale} />
+        <div class="flex items-center gap-3">
+          <LanguageSwitcher
+            locale={locale}
+            targetPath={locale === 'es' ? pathEn : pathEs}
+            label={strings.language.switchTo}
+          />
+          <ThemeToggle
+            labelToggle={strings.theme.toggle}
+            labelLight={strings.theme.light}
+            labelDark={strings.theme.dark}
+            client:load
+          />
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="border-t border-[var(--border)]">
+      <div class="mx-auto max-w-5xl px-6 py-8 font-mono text-xs text-[var(--fg-muted)]">
+        <p>&copy; {new Date().getFullYear()} {strings.hero.name}</p>
+      </div>
+    </footer>
+  </body>
+</html>

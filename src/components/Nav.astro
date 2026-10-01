@@ -1,0 +1,48 @@
+---
+import { localePath, sectionPath, type Locale } from '../i18n/config';
+import { t } from '../i18n/strings';
+import { SERVICES_ENABLED } from '../config/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+
+const items = [
+  { href: localePath(locale), label: strings.nav.home },
+  { href: sectionPath(locale, 'projects'), label: strings.nav.projects },
+  { href: sectionPath(locale, 'stack'), label: strings.nav.stack },
+  { href: sectionPath(locale, 'about'), label: strings.nav.about },
+  { href: sectionPath(locale, 'contact'), label: strings.nav.contact },
+  ...(SERVICES_ENABLED
+    ? [{ href: sectionPath(locale, 'services'), label: strings.nav.services }]
+    : []),
+];
+
+const currentPath = new URL(Astro.request.url).pathname;
+---
+
+<nav aria-label={strings.nav.home}>
+  <ul class="flex flex-wrap gap-x-5 gap-y-2 font-mono text-sm">
+    {
+      items.map((item) => {
+        const isActive = currentPath === item.href;
+        return (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive ? 'page' : undefined}
+              class={`transition-colors hover:text-[var(--fg)] ${
+                isActive ? 'text-[var(--fg)]' : 'text-[var(--fg-muted)]'
+              }`}
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

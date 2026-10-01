@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { t } from '../../i18n/strings';
+import { projectPath, sectionPath } from '../../i18n/config';
+
+const locale = 'en' as const;
+const strings = t(locale);
+const featured = (await getCollection('projects-en'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${strings.hero.name} — Portfolio`}
+  description={strings.hero.tagline}
+  pathEs=""
+  pathEn=""
+>
+  <section class="mx-auto max-w-5xl px-6 py-20">
+    <p class="font-mono text-sm text-[var(--accent)]">{strings.hero.name}</p>
+    <h1 class="mt-3 max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl">
+      {strings.hero.tagline}
+    </h1>
+    <p class="mt-4 font-mono text-sm text-[var(--fg-muted)]">
+      {strings.hero.subtitle}
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-6 pb-20">
+    <div class="flex items-baseline justify-between">
+      <h2 class="font-mono text-sm text-[var(--fg-muted)]">{strings.nav.projects}</h2>
+      <a
+        href={sectionPath(locale, 'projects')}
+        class="font-mono text-xs text-[var(--fg-muted)] hover:text-[var(--fg)]"
+      >
+        {strings.nav.projects} →
+      </a>
+    </div>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+      {
+        featured.map((project) => (
+          <ProjectCard
+            href={projectPath(locale, project.id)}
+            title={project.data.title}
+            summary={project.data.summary}
+            stack={project.data.stack}
+            status={project.data.status}
+          />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

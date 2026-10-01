@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/jetbrains-mono';
+
+@theme {
+  --font-sans: 'Manrope Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #0b0f14;
+  --bg-raised: #121821;
+  --fg: #e6e8eb;
+  --fg-muted: #9aa4b2;
+  --border: #222b36;
+  --accent: #5ec9b0;
+  --accent-fg: #04140f;
+  --focus-ring: #5ec9b0;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #faf9f7;
+  --bg-raised: #ffffff;
+  --fg: #15191e;
+  --fg-muted: #515964;
+  --border: #dfe3e8;
+  /* Darker than the dark-theme accent so small/mono text still clears WCAG AA (4.5:1) on this light background. */
+  --accent: #0a6350;
+  --accent-fg: #ffffff;
+  --focus-ring: #0a6350;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --bg: #faf9f7;
+    --bg-raised: #ffffff;
+    --fg: #15191e;
+    --fg-muted: #515964;
+    --border: #dfe3e8;
+    --accent: #0a6350;
+    --accent-fg: #ffffff;
+    --focus-ring: #0a6350;
+  }
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+}
+
+body {
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,24 @@
+---
+import type { Locale } from '../i18n/config';
+import { localePath } from '../i18n/config';
+
+interface Props {
+  locale: Locale;
+  /** Target path (no leading/trailing slash, no locale segment) for the OTHER locale's version of this page. */
+  targetPath: string;
+  label: string;
+}
+
+const { locale, targetPath, label } = Astro.props;
+const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
+const href = localePath(otherLocale, targetPath);
+---
+
+<a
+  href={href}
+  hreflang={otherLocale}
+  rel="alternate"
+  class="rounded border border-[var(--border)] px-3 py-1.5 font-mono text-sm text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)]"
+>
+  {label}
+</a>
