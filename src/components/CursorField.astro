@@ -1,0 +1,48 @@
+---
+---
+
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-glow" id="cursor-glow" aria-hidden="true"></div>
+
+<script is:inline>
+  (function () {
+    const glow = document.getElementById('cursor-glow');
+    if (!glow) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // Static (no listener, no rAF loop) for touch devices and anyone who
+    // asked for reduced motion: the glow still renders, it just doesn't track anything.
+    if (reduceMotion || !hasFinePointer) return;
+
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight * 0.18;
+    let currentX = targetX;
+    let currentY = targetY;
+    let raf = null;
+
+    function onPointerMove(e) {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (raf === null) raf = requestAnimationFrame(tick);
+    }
+
+    function tick() {
+      // Lerp toward the pointer so the glow trails smoothly instead of
+      // snapping to the cursor on every mousemove.
+      currentX += (targetX - currentX) * 0.12;
+      currentY += (targetY - currentY) * 0.12;
+      glow.style.setProperty('--mx', `${currentX}px`);
+      glow.style.setProperty('--my', `${currentY}px`);
+
+      if (Math.abs(targetX - currentX) > 0.5 || Math.abs(targetY - currentY) > 0.5) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+      }
+    }
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+  })();
+</script>

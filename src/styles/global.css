@@ -17,6 +17,8 @@
   --accent: #5ec9b0;
   --accent-fg: #04140f;
   --focus-ring: #5ec9b0;
+  --accent-glow: rgba(94, 201, 176, 0.16);
+  --grid-line: rgba(230, 232, 235, 0.06);
 }
 
 :root[data-theme='light'] {
@@ -30,6 +32,8 @@
   --accent: #0a6350;
   --accent-fg: #ffffff;
   --focus-ring: #0a6350;
+  --accent-glow: rgba(10, 99, 80, 0.1);
+  --grid-line: rgba(21, 25, 30, 0.05);
 }
 
 @media (prefers-color-scheme: light) {
@@ -43,6 +47,8 @@
     --accent: #0a6350;
     --accent-fg: #ffffff;
     --focus-ring: #0a6350;
+    --accent-glow: rgba(10, 99, 80, 0.1);
+    --grid-line: rgba(21, 25, 30, 0.05);
   }
 }
 
@@ -60,6 +66,33 @@ body {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
+
+/*
+  Decorative backdrop: a faint dot grid plus a soft glow that tracks the
+  cursor (see CursorField.astro). Both layers sit behind everything via a
+  negative z-index, are aria-hidden and pointer-events: none, and never
+  carry content — they're pure atmosphere, not something a screen reader
+  or keyboard user needs to skip past.
+*/
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: radial-gradient(circle, var(--grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    480px circle at var(--mx, 50%) var(--my, 18%),
+    var(--accent-glow),
+    transparent 70%
+  );
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   *,

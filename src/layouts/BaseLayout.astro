@@ -3,6 +3,7 @@ import '../styles/global.css';
 import ThemeToggle from '../components/ThemeToggle.tsx';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
 import Nav from '../components/Nav.astro';
+import CursorField from '../components/CursorField.astro';
 import { localePath, type Locale } from '../i18n/config';
 import { t } from '../i18n/strings';
 import manropeWoff2 from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
@@ -77,7 +78,8 @@ const enUrl = new URL(localePath('en', pathEn), Astro.site);
       })();
     </script>
   </head>
-  <body class="bg-[var(--bg)] text-[var(--fg)] antialiased">
+  <body class="text-[var(--fg)] antialiased">
+    <CursorField />
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-[var(--accent-fg)]"
