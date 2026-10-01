@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n/strings';
+import { PROFILE } from '../../config/site';
+
+const locale = 'es' as const;
+const strings = t(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${strings.about.title} — Santiago Ospina Calle`}
+  description={strings.about.body.slice(0, 155)}
+  pathEs="sobre-mi"
+  pathEn="about"
+>
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    {
+      PROFILE.hasPhoto && (
+        <img
+          src="/profile-photo.jpg"
+          alt={strings.hero.name}
+          width="128"
+          height="128"
+          class="h-32 w-32 rounded border border-[var(--border)] object-cover"
+        />
+      )
+    }
+    <h1 class="mt-6 text-2xl font-semibold">{strings.about.title}</h1>
+    <p class="mt-4 max-w-2xl leading-relaxed text-[var(--fg)]">{strings.about.body}</p>
+    {
+      PROFILE.hasCv && (
+        <a
+          href={PROFILE.cvUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 inline-block rounded border border-[var(--border)] px-3 py-1.5 font-mono text-sm text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)]"
+        >
+          CV →
+        </a>
+      )
+    }
+  </section>
+</BaseLayout>

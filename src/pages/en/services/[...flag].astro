@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { t } from '../../../i18n/strings';
+import { sectionPath } from '../../../i18n/config';
+import { CONTACT, SERVICES_ENABLED } from '../../../config/site';
+
+export async function getStaticPaths() {
+  // No path at all is emitted while the feature is off: this route does not
+  // exist in the build, rather than existing but being hidden from nav.
+  if (!SERVICES_ENABLED) return [];
+  return [{ params: { flag: undefined } }];
+}
+
+const locale = 'en' as const;
+const strings = t(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${strings.services.title} — Santiago Ospina Calle`}
+  description={strings.services.intro}
+  pathEs="servicios"
+  pathEn="services"
+>
+  <section class="mx-auto max-w-5xl px-6 py-16">
+    <h1 class="text-2xl font-semibold">{strings.services.title}</h1>
+    <p class="mt-2 max-w-2xl text-[var(--fg-muted)]">{strings.services.intro}</p>
+
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      {
+        strings.services.items.map((item) => (
+          <div class="rounded border border-[var(--border)] p-5">
+            <h2 class="font-semibold text-[var(--fg)]">{item.title}</h2>
+            <p class="mt-2 text-sm text-[var(--fg-muted)]">{item.description}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <a
+      href={sectionPath(locale, 'contact')}
+      class="mt-8 inline-block rounded border border-[var(--accent)] px-4 py-2 font-mono text-sm text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-fg)]"
+    >
+      {strings.services.ctaLabel} → {CONTACT.email}
+    </a>
+  </section>
+</BaseLayout>
