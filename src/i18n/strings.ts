@@ -65,6 +65,11 @@ export const strings = {
       ],
       ctaLabel: 'Hablemos',
     },
+    notFound: {
+      title: 'Página no encontrada',
+      body: 'La página que buscas no existe o fue movida.',
+      cta: 'Volver al inicio',
+    },
   },
   en: {
     nav: {
@@ -128,6 +133,11 @@ export const strings = {
         },
       ],
       ctaLabel: "Let's talk",
+    },
+    notFound: {
+      title: 'Page not found',
+      body: "The page you're looking for doesn't exist or was moved.",
+      cta: 'Back to home',
     },
   },
 } as const satisfies Record<Locale, unknown>;
