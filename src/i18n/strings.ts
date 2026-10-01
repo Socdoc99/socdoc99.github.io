@@ -19,6 +19,12 @@ export const strings = {
       label: 'Idioma',
       switchTo: 'English',
     },
+    projects: {
+      title: 'Proyectos',
+      intro:
+        'Cuatro proyectos propios y de equipo: una plataforma de aprendizaje de Lengua de Señas Colombiana, un curador de rutas de aprendizaje con RAG, un sistema de reservas de parqueadero y un formulario de inscripción para un hackatón — cada uno en su estado real, de MVP a prototipo sin terminar.',
+      listLabel: 'Lista de proyectos',
+    },
     stack: {
       title: 'Tecnologías',
       intro: 'Lo que uso con regularidad, y lo que todavía estoy consolidando.',
@@ -77,6 +83,12 @@ export const strings = {
     language: {
       label: 'Language',
       switchTo: 'Español',
+    },
+    projects: {
+      title: 'Projects',
+      intro:
+        'Four personal and team projects: a Colombian Sign Language learning platform, a RAG-based learning-roadmap curator, a parking reservation system, and a hackathon registration form — each at its real stage, from MVP to unfinished prototype.',
+      listLabel: 'Project list',
     },
     stack: {
       title: 'Tech stack',

@@ -3,24 +3,24 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ProjectCard from '../../../components/ProjectCard.astro';
 import { projectPath } from '../../../i18n/config';
+import { t } from '../../../i18n/strings';
 
 const locale = 'en' as const;
+const strings = t(locale);
 const projects = (await getCollection('projects-en')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout
   locale={locale}
-  title="Projects — Santiago Ospina Calle"
-  description="Personal and academic projects by Santiago Ospina Calle: databases, automation and cloud architecture."
+  title={`${strings.projects.title} — Santiago Ospina Calle`}
+  description={strings.projects.intro}
   pathEs="proyectos"
   pathEn="projects"
 >
   <section class="mx-auto max-w-5xl px-6 py-16">
-    <h1 class="text-2xl font-semibold">Projects</h1>
-    <p class="mt-2 max-w-2xl text-[var(--fg-muted)]">
-      Personal and team projects, in different states: from a thesis MVP to unfinished academic
-      prototypes. Each one states honestly where it stands.
-    </p>
+    <h1 class="text-2xl font-semibold">{strings.projects.title}</h1>
+    <p class="mt-2 max-w-2xl text-[var(--fg-muted)]">{strings.projects.intro}</p>
+    <h2 class="sr-only">{strings.projects.listLabel}</h2>
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
       {
         projects.map((project) => (

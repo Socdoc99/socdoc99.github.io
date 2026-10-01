@@ -1,5 +1,5 @@
 ---
-title: 'Curador Multiagente de Roadmaps Tech'
+title: 'Curador de Roadmaps Tech con RAG'
 summary: 'Sistema que genera rutas de aprendizaje personalizadas (Frontend, Backend, DevOps o Mobile) combinando recuperación semántica (RAG) sobre una base vectorial propia con una interfaz en Streamlit.'
 stack: ['Python', 'Streamlit', 'LangChain', 'Sentence-Transformers', 'FAISS']
 status: 'Proyecto académico en equipo de tres personas, finalizado y entregado'
