@@ -32,7 +32,26 @@ interface OgImageInput {
   tags?: string[];
 }
 
+// The canvas is a fixed 1200x630 regardless of how long the source copy is
+// (project summaries can run past 500 characters, stacks past 8 items), so
+// both inputs are capped here rather than trusting the caller — this is
+// what was actually overflowing the LOVE / LSC image before this was added.
+const SUBTITLE_MAX_CHARS = 170;
+const MAX_TAGS = 5;
+
+function truncate(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text;
+  const cut = text.slice(0, maxChars);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxChars)}…`;
+}
+
 export async function renderOgImage({ eyebrow, title, subtitle, tags = [] }: OgImageInput): Promise<Buffer> {
+  const visibleTags = tags.slice(0, MAX_TAGS);
+  const tagsLine = tags.length
+    ? visibleTags.join('   ·   ') + (tags.length > MAX_TAGS ? '   ·   …' : '')
+    : 'Santiago Ospina Calle';
+
   const svg = await satori(
     {
       type: 'div',
@@ -40,12 +59,14 @@ export async function renderOgImage({ eyebrow, title, subtitle, tags = [] }: OgI
         style: {
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
+          gap: '36px',
           width: '1200px',
           height: '630px',
           padding: '72px',
           backgroundColor: COLORS.bg,
           fontFamily: 'Manrope',
+          overflow: 'hidden',
         },
         children: [
           {
@@ -90,7 +111,7 @@ export async function renderOgImage({ eyebrow, title, subtitle, tags = [] }: OgI
                       lineHeight: 1.45,
                       maxWidth: '920px',
                     },
-                    children: subtitle,
+                    children: truncate(subtitle, SUBTITLE_MAX_CHARS),
                   },
                 },
               ],
@@ -103,6 +124,7 @@ export async function renderOgImage({ eyebrow, title, subtitle, tags = [] }: OgI
                 display: 'flex',
                 alignItems: 'center',
                 gap: '14px',
+                marginTop: 'auto',
                 borderTop: `1px solid ${COLORS.border}`,
                 paddingTop: '26px',
               },
@@ -128,7 +150,7 @@ export async function renderOgImage({ eyebrow, title, subtitle, tags = [] }: OgI
                       fontSize: 21,
                       color: COLORS.fgMuted,
                     },
-                    children: tags.length ? tags.join('   ·   ') : 'Santiago Ospina Calle',
+                    children: tagsLine,
                   },
                 },
               ],
