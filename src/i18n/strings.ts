@@ -15,11 +15,6 @@ export const strings = {
       tagline: 'Desarrollador junior enfocado en bases de datos y automatización.',
       subtitle: 'Practicante en BI e infraestructura Azure DevOps · Pereira, Colombia',
     },
-    theme: {
-      toggle: 'Cambiar tema',
-      light: 'Tema claro',
-      dark: 'Tema oscuro',
-    },
     language: {
       label: 'Idioma',
       switchTo: 'English',
@@ -78,11 +73,6 @@ export const strings = {
       name: 'Santiago Ospina Calle',
       tagline: 'Junior developer focused on databases and automation.',
       subtitle: 'BI and Azure DevOps infrastructure intern · Pereira, Colombia',
-    },
-    theme: {
-      toggle: 'Toggle theme',
-      light: 'Light theme',
-      dark: 'Dark theme',
     },
     language: {
       label: 'Language',

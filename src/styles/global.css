@@ -21,37 +21,6 @@
   --grid-line: rgba(230, 232, 235, 0.06);
 }
 
-:root[data-theme='light'] {
-  color-scheme: light;
-  --bg: #faf9f7;
-  --bg-raised: #ffffff;
-  --fg: #15191e;
-  --fg-muted: #515964;
-  --border: #dfe3e8;
-  /* Darker than the dark-theme accent so small/mono text still clears WCAG AA (4.5:1) on this light background. */
-  --accent: #0a6350;
-  --accent-fg: #ffffff;
-  --focus-ring: #0a6350;
-  --accent-glow: rgba(10, 99, 80, 0.1);
-  --grid-line: rgba(21, 25, 30, 0.05);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) {
-    color-scheme: light;
-    --bg: #faf9f7;
-    --bg-raised: #ffffff;
-    --fg: #15191e;
-    --fg-muted: #515964;
-    --border: #dfe3e8;
-    --accent: #0a6350;
-    --accent-fg: #ffffff;
-    --focus-ring: #0a6350;
-    --accent-glow: rgba(10, 99, 80, 0.1);
-    --grid-line: rgba(21, 25, 30, 0.05);
-  }
-}
-
 html {
   background: var(--bg);
   color: var(--fg);
@@ -92,7 +61,6 @@ body {
     transparent 70%
   );
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   *,
